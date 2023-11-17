@@ -19,13 +19,37 @@ app.get("/", (req,res)=>{
     res.sendFile(__dirname + "/views/index.html");
 });
 
-io.on("connection", socket=>{
+io.on("connection", socket => {
+    socket.connectedRoom = "" ; // se crea la propiedad automaticamente
 
-    socket.on("circle_position", position => {
-        socket.broadcast.emit("move_circle", position); // a todos menos a mi
-        // io.emit("move_circle", position);
-
+    //Cambiando de sala
+    socket.on("connect_room", room => {
+        socket.leave(socket.connectedRoom);
+        
+        switch (room) {
+            case "room1":
+                socket.join("room1");
+                socket.connectedRoom = "room1"
+                break;
+            case "room2":
+                socket.join("room2");
+                socket.connectedRoom = "room2"
+                break;
+            case "room3":
+                socket.join("room3");
+                socket.connectedRoom = "room3"
+                break;
+        }
     });
+
+    socket.on("message", message => {
+        const room = socket.connectedRoom;
+        io.to(room).emit("send_message", {
+            message,
+            room
+        });
+    });
+
 });
 
 httpServer.listen(PORT, ()=>{
