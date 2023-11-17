@@ -1,42 +1,42 @@
-const socket = io();
+const user = prompt("Escribe tu usuario");
+const profes = ["Daniel","Alejandro","Caicedo"] // lista de usuarios de profesores
 
-// Seleccionar los botones para poderse conectar a la salas
-const connectRoom1 = document.getElementById("connectRoom1");
-const connectRoom2 = document.getElementById("connectRoom2");
-const connectRoom3 = document.getElementById("connectRoom3");
+let socketNameSpace, group;
 
-// Eventos para que al hacer click se conecte a las salas
-connectRoom1.addEventListener("click", ()=>{
-    socket.emit("connect_room","room1");
+const chat = document.getElementById("chat");
+const namespace = document.getElementById("namespace");
 
+if(profes.includes(user)){
+    socketNameSpace = io("/teachers");
+    group = "teachers";
+    
+} else {
+    socketNameSpace = io("/students");
+    group = "students";
+}
+
+socketNameSpace.on("connect", ()=>{
+    namespace.textContent = group;
 });
 
-connectRoom2.addEventListener("click", ()=>{
-    socket.emit("connect_room","room2");
+// Progrmando la logica de envio de mensajes 
 
-});
+const sendMessage = document.getElementById("sendMessage");
 
-connectRoom3.addEventListener("click", ()=>{
-    socket.emit("connect_room","room3");
-});
-
-
-
-// Enviar Mensaje
-const sendMessageButton = document.getElementById('sendMessage');
-
-sendMessageButton.addEventListener("click", ()=>{
-    const message = prompt("Escriba su mensaje");
-    socket.emit("message", message);
+sendMessage.addEventListener("click", ()=>{
+    const message = prompt("Escribe tu mensaje");
+    socketNameSpace.emit("send_message", {
+        message,
+        user
+    });
 });
 
 
-// recibir evento del mensaje
+socketNameSpace.on("message", data => {
+    const {message} = data; 
+    const {user} = data;
 
-socket.on("send_message",data => {
-    const {room} = data;
-    const {message} = data;
     const li = document.createElement("li");
-    li.textContent = message;
-    document.getElementById(`${room}`).append(li);
+    li.textContent = `${user}: ${message}`;
+    chat.append(li)
 });

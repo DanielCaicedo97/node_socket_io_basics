@@ -19,37 +19,25 @@ app.get("/", (req,res)=>{
     res.sendFile(__dirname + "/views/index.html");
 });
 
-io.on("connection", socket => {
-    socket.connectedRoom = "" ; // se crea la propiedad automaticamente
+// io.on("connection", socket => {
 
-    //Cambiando de sala
-    socket.on("connect_room", room => {
-        socket.leave(socket.connectedRoom);
-        
-        switch (room) {
-            case "room1":
-                socket.join("room1");
-                socket.connectedRoom = "room1"
-                break;
-            case "room2":
-                socket.join("room2");
-                socket.connectedRoom = "room2"
-                break;
-            case "room3":
-                socket.join("room3");
-                socket.connectedRoom = "room3"
-                break;
-        }
+// });
+
+// Name personalizados
+const teachers = io.of("teachers");
+const students = io.of("students");
+
+teachers.on("connection", socket=>{
+    console.log(socket.id + " se ha conectado a la sala de profes");
+    socket.on("send_message", data =>{
+        teachers.emit("message", data);
     });
-
-    socket.on("message", message => {
-        const room = socket.connectedRoom;
-        io.to(room).emit("send_message", {
-            message,
-            room
-        });
+});
+students.on("connection", socket=>{
+    console.log(socket.id + " se ha conectado a la sala de estudiantes");
+    socket.on("send_message", data =>{
+        students.emit("message", data);
     });
-
 });
 
 httpServer.listen(PORT, ()=>{
