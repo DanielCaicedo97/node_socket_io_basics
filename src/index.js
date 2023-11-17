@@ -19,7 +19,18 @@ app.get("/", (req,res)=>{
 });
 
 io.on("connection", socket=>{
-    console.log(socket.id);
+    // console.log("Clientes conectados:,", io.engine.clientsCount);
+    // console.log("Id del socket conectados:",socket.id);
+    
+    //eventos en la capa io verificando la capa de transporte
+    socket.conn.once("upgrade",()=>{
+        console.log("hemos pasado de HTTP Long-Polling a: ", socket.conn.transport.name)
+    });
+
+    //eventos de desconexion 
+    socket.on("disconnect", ()=>{
+        console.log("El  socket ", socket.id, "se ha desconectado");
+    })
 });
 
 httpServer.listen(PORT, ()=>{
