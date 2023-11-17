@@ -7,10 +7,10 @@
     <title>Servidor con express y socket.io</title>
 </head>
 <body>
-     <!-- simulando name spaces -->
-    <h1>chat de <span id ="namespace"></span></h1>
-    <ul id="chat"></ul>
-    <button id="sendMessage">Enviar un mensaje</button>
+     <!-- trabajando en off-line -->
+    <button id="send">Send to All clientes connected</button>
+    <button id="disconnect">Disconnect</button>
+    <button id="reconnect">Reconnect</button>
 
     <script src="/socket.io/socket.io.js"></script>
     <script src= "./js/index.js"></script>
