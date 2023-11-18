@@ -19,14 +19,25 @@ app.get("/", (req,res)=>{
     res.sendFile(__dirname + "/views/index.html");
 });
 
-io.on("connection", socket => {
-    socket.on("is_connected", msg =>{
-        console.log(msg);
-    })
-
+// Middleware para determinar si esta autenticado
+io.use((socket,next)=>{
+    const token = socket.handshake.auth.token;
+    if(token === 'token'){
+        next();
+    } else {
+        const err = new Error("No puedes acceder");
+        err.data = {
+            details: "No se lograste ser autenticado"
+        }
+        
+        next(err);
+    }
 });
 
+io.on("connection", socket => {
+    console.log(socket.id);
 
+});
 
 httpServer.listen(PORT, ()=>{
     console.log(`Server listen in port: http://localhost:${PORT} ...`)

@@ -1,19 +1,13 @@
-const socket = io();
-
-const send = document.getElementById("send");
-const disconnect = document.getElementById("disconnect");
-const reconnect = document.getElementById("reconnect");
-
-
-send.addEventListener("click", ()=>{
-    if(socket.connected){
-        socket.emit("is_connected", "Esta conectado!");
+const socket = io({
+    auth:{
+        token: "token"
     }
 });
 
-disconnect.addEventListener("click", ()=>{
-    socket.disconnect();
-});
-reconnect.addEventListener("click", ()=>{
-    socket.connect();
+
+// En caso de error en el midleware
+socket.on("connect_error", err => {
+    console.log("Error de conexion");
+    console.log(err.message);
+    console.log(err.data.details);
 });
