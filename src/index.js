@@ -1,9 +1,11 @@
+// process.env.DEBUG = "*" // Para iniciar el DEBUG
+process.env.DEBUG = "engine,socket.io:socket" // Para iniciar el DEBUG con filtro
+
 import path from "path";
 import express from "express";
 import http from "http";
 import {fileURLToPath} from "url"
 import {Server as serverSocket} from "socket.io"
-
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -20,11 +22,11 @@ app.get("/", (req,res)=>{
 });
 
 io.on("connection", socket=>{
-
+    
     socket.on("circle_position", position => {
         socket.broadcast.emit("move_circle", position); // a todos menos a mi
         // io.emit("move_circle", position);
-
+        
     });
 });
 
